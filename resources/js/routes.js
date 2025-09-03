@@ -1,6 +1,8 @@
 const Index = () => import("./pages/index.vue");
 const Home = () => import("./pages/home.vue");
 const About = () => import("./pages/about.vue");
+const Login = () => import("./front/login.vue");
+const Register = () => import("./front/register.vue");
 
 export default [
     {
@@ -18,16 +20,9 @@ export default [
                 name: "about",
                 component: About,
             },
-            {
-                path: "/login",
-                name: "login",
-                component: Home,
-            },
-            {
-                path: "/register",
-                name: "register",
-                component: Home,
-            },
         ],
     },
+
+    { path: "/login", name: "login", component: Login },
+    { path: "/register", name: "register", component: Register },
 ];

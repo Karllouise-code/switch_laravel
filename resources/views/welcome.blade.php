@@ -8,7 +8,9 @@
 
         <!-- VITE -->
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+
         {{-- @vite(['resources/js/app.js', 'resources/sass/app.scss']) --}}
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
     </head>
     <body>
         <div id="app"></div>

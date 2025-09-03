@@ -18,3 +18,7 @@ body {
 main {
     flex-grow: 1; /* Make the main content area grow */
 }
+
+.gradient-custom {
+    background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+}
