@@ -38,7 +38,7 @@
 
                     <div class="d-flex justify-content-center">
                     <button  type="button" data-mdb-button-init
-                        data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5">Register</button>
+                        data-mdb-ripple-init class="btn btn-outline-light btn-lg w-100">Register</button>
                     </div>
 
                     <p class="text-center text-white-50 mt-5 mb-0">Have already an account? 
