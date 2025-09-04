@@ -7,39 +7,95 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Log;
+use Hash;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $table = 'tblUsers';
+    protected $primaryKey = 'fldUsersID';
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'fldUsersPassword'
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    public function findForPassport($username) {
+        $user = $this
+            ->where('fldUsersEmail', $username)
+            ->first();
+        return $user;
+    }
+
+    public function validateForPassportPasswordGrant($password) {
+        return Hash::check($password, $this->fldUsersPassword);
+    }
+
+    public function onRegister($data) {
+        $response_obj = new \stdClass();
+        try {
+            $user = new self;
+
+            $user->fldUsersName = $data['name'];
+            $user->fldUsersEmail = $data['email'];
+            $user->fldUsersPassword = Hash::make($data['password']);
+    
+            $user->save();
+
+            $response_obj->error = false;
+            $response_obj->message = "User created successfully";
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            $response_obj->error = true;
+            $response_obj->message = $th->getMessage();
+        }
+
+        return $response_obj;
+    }
+
+    public function onLogin($data) {
+        $response_obj = new \stdClass();
+        try {
+            // check if user exists
+            $user = self::where('fldUsersEmail', $data['email'])->first();
+            Log::debug(print_r($user->toArray(), true));
+
+            if ($user) {
+                if(Hash::check($data['password'], $user->fldUsersPassword)) {
+                    $oauth_helper = new OAuthHelper();
+                    $response = $oauth_helper->GenerateUserToken($data['email'], $data['password']);
+                    $response = json_decode($response);
+                    Log::debug(print_r($response, true));
+                    
+                    $response_obj->token = $response->access_token;
+                    
+
+
+                    $response_obj->error = false;
+                    $response_obj->message = "User logged in successfully";
+                } else {
+                    $response_obj->error = true;
+                    $response_obj->message = "Invalid email or password";
+                }
+            } else {
+                $response_obj->error = true;
+                $response_obj->message = "Invalid email or password";
+            }
+
+            /* if ($user->validateForPassportPasswordGrant($data['password'])) {
+                $response_obj->error = false;
+                $response_obj->message = "User logged in successfully";
+            } else {
+                $response_obj->error = true;
+                $response_obj->message = "Invalid email or password";
+            } */
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            $response_obj->error = true;
+            $response_obj->message = $th->getMessage();
+        }
+
+        return $response_obj;
+    }
 }

@@ -6,3 +6,16 @@ mix.js('resources/js/app.js', 'public/js')
    .options({
       processCssUrls: false
    });
+
+mix.webpackConfig({
+      output: {
+          publicPath: '/public/',
+          chunkFilename: '[name].bundle.js?id=[contenthash]'
+      },
+      optimization: {
+          splitChunks: {
+              automaticNameDelimiter: '-',
+              name: false
+          }
+      }
+  });
