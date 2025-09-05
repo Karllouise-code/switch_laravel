@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Log;
 use Hash;
+use Auth;
 
 class User extends Authenticatable
 {
@@ -59,17 +60,14 @@ class User extends Authenticatable
         try {
             // check if user exists
             $user = self::where('fldUsersEmail', $data['email'])->first();
-            Log::debug(print_r($user->toArray(), true));
 
             if ($user) {
                 if(Hash::check($data['password'], $user->fldUsersPassword)) {
                     $oauth_helper = new OAuthHelper();
                     $response = $oauth_helper->GenerateUserToken($data['email'], $data['password']);
                     $response = json_decode($response);
-                    Log::debug(print_r($response, true));
                     
-                    $response_obj->token = $response->access_token;
-                    
+                    $response_obj->access_token = $response->access_token;
 
 
                     $response_obj->error = false;
@@ -98,4 +96,9 @@ class User extends Authenticatable
 
         return $response_obj;
     }
+
+    public function displayUser() {
+        return Auth::user();
+    }
+
 }

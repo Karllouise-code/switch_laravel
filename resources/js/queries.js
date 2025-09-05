@@ -1,4 +1,5 @@
 import axios from "axios";
+import CryptoJS from "crypto-js";
 
 let queries = {
     action_user: `mutation ($user: user_input) {
@@ -8,44 +9,52 @@ let queries = {
             access_token
         }
     }`,
+
+    user: `query ($action_type: String) {
+        user(action_type: $action_type) {
+            name,
+            email,
+        }
+    }`,
 };
 
 
-// const userQueries = [""];
+const userQueries = ["user"];
 
-// const getApiUrl = (queryName) => {
-//     let segment = "";
+const getApiUrl = (queryName) => {
+    let segment = "";
 
-//     if (userQueries.some((q) => q === queryName)) {
-//         segment = "/users";
-//     }
+    if (userQueries.some((q) => q === queryName)) {
+        segment = "/user";
+    }
 
-//     return `/graphql${segment}`;
-// };
+    return `/graphql${segment}`;
+};
 
 const query = (queryName, queryVariables) => {
-    // if (userQueries.some((q) => q === queryName)) {
-    //     var secret_passphrase = process.env.MIX_SECRET_PASSPHRASE;
-    //     var token = "";
-    //     const encryptedToken = sessionStorage.getItem("uat");
-    //     token = CryptoJS.AES.decrypt(encryptedToken, secret_passphrase).toString(CryptoJS.enc.Utf8);
-    // }
+    var token = '';
+    if (userQueries.some((q) => q === queryName)) {
+        var secret_passphrase = process.env.MIX_SECRET_PASSPHRASE;
+        const encryptedToken = sessionStorage.getItem("access-token");
+        token = CryptoJS.AES.decrypt(encryptedToken, secret_passphrase).toString(CryptoJS.enc.Utf8);
+    }
     
     let options = {
-        url: "/graphql",
+        // url: "/graphql",
+        url: getApiUrl(queryName),
         method: "POST",
         data: {
             query: queries[queryName],
             variables: queryVariables,
         },
     };
+    
 
-    // if (token) {
-    //     options.headers = {
-    //         Authorization: `Bearer ${token}`,
-    //     };
-    // }
-
+    if (token) {
+        options.headers = {
+            Authorization: `Bearer ${token}`,
+        };
+    }
 
     return axios(options);
 };
