@@ -65,6 +65,10 @@
 
 <script>
 export default {
+    metaInfo: {
+        title: 'Switch Laravel - Register',
+    },
+
     data() {
         return {
             name: '',

@@ -31,7 +31,7 @@ class UserQuery extends Query
         $user_model = new User();
 
         if ($args['action_type'] == "display_user") {
-            $user[] = $user_model->findForDisplay();
+            $user[] = $user_model->displayUser();
         }
 
         return $user;

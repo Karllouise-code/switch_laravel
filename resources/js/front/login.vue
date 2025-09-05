@@ -55,6 +55,10 @@
 import CryptoJS from 'crypto-js';
 
 export default {
+    metaInfo: {
+        title: 'Switch Laravel - Login',
+    },
+    
     data() {
         return {
             email: '',
@@ -104,6 +108,7 @@ export default {
 
 
                             sessionStorage.setItem("access-token", encryptedToken);
+                            this.$root.token = encryptedToken;
                             this.$appEvents.emit('logged-in', response.user);
                             this.$router.push({ name: "dashboard" });
 
@@ -127,10 +132,6 @@ export default {
             this.password = '';
         }
     },
-
-    mounted() {
-        sessionStorage.removeItem("access-token");
-    }
 
 }
 </script>
